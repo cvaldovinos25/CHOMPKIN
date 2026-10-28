@@ -63,21 +63,8 @@ h1 .ltr.y{background-image:linear-gradient(#fff 0%,#ffb3ec 45%,#c05cff 100%)}
 <video id="vid" playsinline muted autoplay></video>
 <canvas id="gc"></canvas>
 
-<div id="hud" class="hidden">
-  <div><b style="color:#fff">1UP</b><span id="score">0</span></div>
-  <div class="c"><b style="color:#fff">HIGH SCORE</b><span id="hi">0</span><div style="margin-top:6px;font-size:8px;color:#25d9ff">NIVEL <span id="lvl">1</span> <span id="lives"></span></div></div>
-  <div class="r"><b style="color:#fff">DULCES</b><span id="left">0</span></div>
-</div>
-<div id="msg" class="hidden"></div>
-<div id="anchorUI" class="hidden">
-  <p id="anchorTxt">Apunta a un punto fijo del piso o de la pared y toca para anclar el laberinto ahí.</p>
-  <button class="btn" id="anchorBtn">ANCLAR AQUÍ</button>
-</div>
 <div class="tools hidden" id="tools">
   <button id="bMute" aria-label="Sonido">🔊</button>
-  <button id="bPhoto" aria-label="Foto">📸</button>
-  <button id="bFlip" aria-label="Cambiar cámara">🔄</button>
-  <button id="bRe" aria-label="Volver a anclar">📍</button>
 </div>
 <div id="toast" class="hidden"></div>
 
@@ -85,10 +72,10 @@ h1 .ltr.y{background-image:linear-gradient(#fff 0%,#ffb3ec 45%,#c05cff 100%)}
   <div class="moon"></div>
   <div class="bats"><i>🦇</i><i>🦇</i><i>🦇</i></div>
   <h1>Chomp<em>kin</em></h1>
-  <p class="sub">La noche de dulces.<br>Introducción en realidad aumentada.</p>
+  <p class="sub">La noche de dulces.<br>Intro en video con cámara.</p>
   <div class="how">
-    <b>1.</b> Apunta la cámara a un punto fijo del piso o la pared: el laberinto se ancla ahí.<br>
-    <b>2.</b> Cuando caiga la noche, ¡corre... o te atrapan! Con disfraz <b>amarillo</b> eres la calabaza.
+    <b>1.</b> Pulsa PLAY y permite el acceso a la cámara.<br>
+    <b>2.</b> Mira a tu alrededor: cae la noche y empieza la cuenta regresiva. ¡Corre... o te atrapan!
   </div>
   <div id="tap">TOCA PARA ACTIVAR EL SONIDO</div>
   <button class="btn blink" id="play">▶ PLAY</button>
@@ -96,9 +83,6 @@ h1 .ltr.y{background-image:linear-gradient(#fff 0%,#ffb3ec 45%,#c05cff 100%)}
   <div class="sub" style="font-size:8px;opacity:.7">Se usa la cámara y el audio de tu celular. No se guarda ni se envía ninguna imagen.</div>
 </div>
 <script src="js/audio.js"></script>
-<script src="js/vision.js"></script>
-<script src="js/tracker.js"></script>
-<script src="js/game.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
