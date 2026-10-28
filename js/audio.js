@@ -77,5 +77,12 @@
   });
   A.win = sfx((t) => { [523, 659, 784, 1046, 784, 1046, 1318].forEach((f, i) => note(f, t + i * 0.1, 0.16, 'square', 0.22, sfxGain)); });
   A.anchor = sfx((t) => { note(330, t, 0.1, 'triangle', 0.4, sfxGain); note(660, t + 0.09, 0.18, 'triangle', 0.4, sfxGain); });
+  A.tick = (n) => {
+    if (!ctx || muted) return; const t = ctx.currentTime, k = 5 - Math.min(5, Math.max(1, n));   // k: 0 (5 s) a 4 (1 s)
+    thump(t, 0.9); note(220 * Math.pow(1.12, k), t, 0.16, 'square', 0.22 + k * 0.04, sfxGain); note(110 * Math.pow(1.12, k), t, 0.3, 'sawtooth', 0.12, sfxGain);
+    if (n <= 3) { const b = ctx.createBufferSource(), buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.25), ctx.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2); b.buffer = buf; const g = ctx.createGain(); g.gain.value = 0.25; b.connect(g); g.connect(sfxGain); b.start(t); }
+    if (n === 1) note(1760, t + 0.05, 0.4, 'square', 0.08, sfxGain);
+  };
+  A.go = sfx((t) => { [330, 440, 554, 659, 880].forEach((f, i) => note(f, t + i * 0.05, 0.22, 'square', 0.24, sfxGain)); const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(900, t); o.frequency.exponentialRampToValueAtTime(60, t + 0.6); g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.7); o.connect(g); g.connect(sfxGain); o.start(t); o.stop(t + 0.75); });
   A.hello = sfx((t) => { [440, 554, 659].forEach((f, i) => note(f, t + i * 0.08, 0.14, 'square', 0.18, sfxGain)); });
 })();

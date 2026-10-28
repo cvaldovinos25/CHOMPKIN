@@ -3,7 +3,7 @@
   const $ = (q) => document.querySelector(q);
   const vid = $('#vid'), cv = $('#gc'), ctx = cv.getContext('2d'), A = window.TC_Audio;
   let mode = 'intro', stream = null, W = 0, H = 0, dpr = 1, seq = null;
-  const CD0 = 2.6, CDN = 10;   // la cuenta empieza a los 2.6 s de la noche y dura 10 s
+  const CD0 = 2.6, CDN = 5;   // la cuenta empieza a los 2.6 s de la noche y dura 5 s
 
   function resize() { dpr = Math.min(window.devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
   addEventListener('resize', resize); resize();
@@ -62,10 +62,12 @@
   function loop() {
     requestAnimationFrame(loop); ctx.clearRect(0, 0, W, H);
     if (mode !== 'play' || !seq) return;
-    const t = performance.now() / 1000, seqT = t - seq.t0, nk = Math.min(1, seqT / 2.8) * (seqT < 1.6 && Math.sin(seqT * 34) > 0.55 ? 0.55 : 1);
+    const t = performance.now() / 1000, seqT = t - seq.t0, up = Math.min(1, seqT / 2.8) * (seqT < 1.6 && Math.sin(seqT * 34) > 0.55 ? 0.55 : 1), dawn = seq.cdDone ? Math.min(1, (seqT - CD0 - CDN) / 1.8) : 0, nk = up * (1 - dawn);
     ctx.fillStyle = 'rgba(2,4,26,' + (0.5 * nk) + ')'; ctx.fillRect(0, 0, W, H);
     const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.25, W / 2, H / 2, Math.max(W, H) * 0.75); vg.addColorStop(0, 'rgba(0,0,10,0)'); vg.addColorStop(1, 'rgba(0,0,10,' + (0.75 * nk) + ')'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
-    if (seqT >= CD0 + CDN && !seq.cdDone) { seq.cdDone = true; A.setTheme('normal'); A.hello(); }
+    const left = CD0 + CDN - seqT, n = Math.ceil(left);
+    if (seqT >= CD0 && left > 0 && n !== seq.lastN) { seq.lastN = n; A.tick(n); }   // un efecto de sonido por segundo
+    if (left <= 0 && !seq.cdDone) { seq.cdDone = true; A.setTheme('normal'); A.go(); vid.style.transition = 'filter 1.8s ease-out'; vid.classList.remove('night'); }   // amanece: cámara clara y sin niebla
     drawFog(t, nk); drawRun(t, seqT);
   }
   try { document.fonts.load('20px "Arcade Normal"'); } catch (e) {}

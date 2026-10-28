@@ -1,5 +1,5 @@
 /* Chompkin: funcionamiento sin conexión (primero la red; si falla, la copia guardada). Sube CACHE al publicar cambios grandes. */
-const CACHE = 'chompkin-v4';
+const CACHE = 'chompkin-v5';
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => Promise.allSettled(['./', 'index.html', 'manifest.webmanifest', 'js/audio.js', 'js/main.js', 'fonts/ARCADE_N.TTF', 'img/icon-192.png'].map((u) => c.add(u)))).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {
