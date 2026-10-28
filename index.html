@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#14002b">
-<title>Chompkin</title>
-<meta name="description" content="Juego de realidad aumentada para Halloween.">
+<title>Chompkin | Noche de dulces</title>
+<meta name="description" content="Juego de realidad aumentada para Halloween: ancla un laberinto arcade en el mundo real, juega con música y deja que las personas disfrazadas de amarillo se coman los caramelos.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/ARCADE_N.TTF" as="font" type="font/ttf" crossorigin>
 <style>
@@ -62,6 +62,7 @@ h1 .ltr.y{background-image:linear-gradient(#fff 0%,#ffb3ec 45%,#c05cff 100%)}
 <body>
 <video id="vid" playsinline muted autoplay></video>
 <canvas id="gc"></canvas>
+<div id="yt" style="position:fixed;left:-400px;top:0;width:200px;height:200px;pointer-events:none"></div>
 
 <div class="tools hidden" id="tools">
   <button id="bMute" aria-label="Sonido">🔊</button>
@@ -72,10 +73,10 @@ h1 .ltr.y{background-image:linear-gradient(#fff 0%,#ffb3ec 45%,#c05cff 100%)}
   <div class="moon"></div>
   <div class="bats"><i>🦇</i><i>🦇</i><i>🦇</i></div>
   <h1>Chomp<em>kin</em></h1>
-  <p class="sub">La noche de dulces.<br>
+  <p class="sub">La noche de dulces.<br>Intro en video con cámara.</p>
   <div class="how">
     <b>1.</b> Pulsa PLAY y permite el acceso a la cámara.<br>
-    <b>2.</b> Mira a tu alrededor...
+    <b>2.</b> Mira a tu alrededor: cae la noche y empieza la cuenta regresiva. ¡Corre... o te atrapan!
   </div>
   <div id="tap">TOCA PARA ACTIVAR EL SONIDO</div>
   <button class="btn blink" id="play">▶ PLAY</button>

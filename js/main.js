@@ -16,18 +16,34 @@
     return true;
   }
   function setMode(m) { mode = m; $('#intro').classList.toggle('hidden', m !== 'intro'); $('#tools').classList.toggle('hidden', m !== 'play'); }
+  // música: video de YouTube incrustado (oculto). Si no carga, suena la música original por código.
+  const YT_ID = 'hDB6oRx4InQ'; let yt = null, ytPlaying = false, gesture = false, musicKind = 'normal';
+  function applyMusic() {
+    if (!ytPlaying || !yt) return;
+    try { yt.setPlaybackRate(musicKind === 'spooky' ? 0.5 : 1); yt.setVolume(musicKind === 'spooky' ? 75 : 100); A.isMuted() ? yt.mute() : yt.unMute(); } catch (e) {}
+  }
+  function setMusic(kind) { musicKind = kind; if (ytPlaying) applyMusic(); else A.setTheme(kind); }
+  function ytMake() {
+    try {
+      yt = new YT.Player('yt', { videoId: YT_ID, width: '200', height: '200', playerVars: { controls: 0, playsinline: 1, loop: 1, playlist: YT_ID, disablekb: 1, rel: 0 }, events: {
+        onReady: () => { if (gesture) yt.playVideo(); },
+        onStateChange: (e) => { if (e.data === 1) { ytPlaying = true; A.setTheme('off'); applyMusic(); } },
+        onError: () => { ytPlaying = false; A.setTheme(musicKind); } } });
+    } catch (e) {}
+  }
+  (function () { window.onYouTubeIframeAPIReady = ytMake; const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.async = true; document.head.appendChild(sc); })();
   function syncMute() { const m = A.isMuted() ? '🔇' : '🔊'; $('#bMute').textContent = m; $('#bMuteI').textContent = m; }
-  function wake() { A.start(); const tp = $('#tap'); if (tp) tp.textContent = ''; }
+  function wake() { A.start(); gesture = true; try { if (yt && yt.getPlayerState && yt.getPlayerState() !== 1 && !seq) yt.playVideo(); else if (yt && yt.getPlayerState && yt.getPlayerState() !== 1) yt.playVideo(); } catch (e) {} const tp = $('#tap'); if (tp) tp.textContent = ''; }
   ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => addEventListener(ev, wake, { passive: true }));
   try { A.start(); } catch (e) {}   // intenta sonar de inmediato; si el navegador lo bloquea, suena al primer toque
   async function start() {
-    A.start(); A.setTheme('normal'); syncMute();
+    A.start(); gesture = true; setMusic('normal'); syncMute();
     if (!(await camStart())) return;
     seq = { t0: performance.now() / 1000, cdDone: false };
-    A.setTheme('spooky'); vid.classList.add('night'); setMode('play');
+    setMusic('spooky'); vid.classList.add('night'); setMode('play');
   }
   $('#play').onclick = start;
-  const tgl = () => { A.setMuted(!A.isMuted()); syncMute(); A.start(); };
+  const tgl = () => { A.setMuted(!A.isMuted()); syncMute(); A.start(); applyMusic(); };
   $('#bMute').onclick = tgl; $('#bMuteI').onclick = (e) => { e.stopPropagation(); tgl(); };
 
   const fogC = document.createElement('canvas'); fogC.width = fogC.height = 256; (function () { const f = fogC.getContext('2d'), g = f.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(190,210,255,.55)'); g.addColorStop(0.5, 'rgba(150,170,230,.22)'); g.addColorStop(1, 'rgba(150,170,230,0)'); f.fillStyle = g; f.fillRect(0, 0, 256, 256); })();
@@ -67,7 +83,7 @@
     const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.25, W / 2, H / 2, Math.max(W, H) * 0.75); vg.addColorStop(0, 'rgba(0,0,10,0)'); vg.addColorStop(1, 'rgba(0,0,10,' + (0.75 * nk) + ')'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
     const left = CD0 + CDN - seqT, n = Math.ceil(left);
     if (seqT >= CD0 && left > 0 && n !== seq.lastN) { seq.lastN = n; A.tick(n); }   // un efecto de sonido por segundo
-    if (left <= 0 && !seq.cdDone) { seq.cdDone = true; A.setTheme('normal'); A.go(); vid.style.transition = 'filter 1.8s ease-out'; vid.classList.remove('night'); }   // amanece: cámara clara y sin niebla
+    if (left <= 0 && !seq.cdDone) { seq.cdDone = true; setMusic('normal'); A.go(); vid.style.transition = 'filter 1.8s ease-out'; vid.classList.remove('night'); }   // amanece: cámara clara y sin niebla
     drawFog(t, nk); drawRun(t, seqT);
   }
   try { document.fonts.load('20px "Arcade Normal"'); } catch (e) {}

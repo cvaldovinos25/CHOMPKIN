@@ -26,6 +26,7 @@
     g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.28); o.connect(g); g.connect(musicGain); o.start(t); o.stop(t + 0.3);
   }
   function schedule() {
+    if (theme === 'off') { nextT = ctx.currentTime + 0.1; return; }   // la música viene del video de YouTube
     const sp = theme === 'spooky', bpm = sp ? 70 : (fast ? 176 : 142), sd = 60 / bpm / 2;
     while (nextT < ctx.currentTime + 0.25) {
       const i = step % BASSN.length;
