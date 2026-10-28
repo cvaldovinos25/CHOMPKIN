@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#14002b">
+<title>Chompkin | Noche de dulces</title>
+<meta name="description" content="Juego de realidad aumentada para Halloween: ancla un laberinto arcade en el mundo real, juega con música y deja que las personas disfrazadas de amarillo se coman los caramelos.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="fonts/ARCADE_N.TTF" as="font" type="font/ttf" crossorigin>
+<style>
+@font-face{font-family:"Arcade Normal";src:url(fonts/ARCADE_N.TTF) format("truetype");font-display:block}
+:root{--or:#ff7a00;--yl:#ffd400;--pu:#b46bff;--bg:#14002b;--arc:"Arcade Normal",ui-monospace,Menlo,Consolas,monospace;--hal:Creepster,"Chiller","Papyrus",fantasy}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;touch-action:manipulation}
+video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#0b0016;transition:filter 3s ease-in}
+video.night{filter:brightness(.32) saturate(.5) contrast(1.15) hue-rotate(-12deg) blur(.6px)}
+#bMuteI{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.6);background:rgba(20,0,43,.6);font-size:18px;color:#fff}
+#tap{font-family:var(--arc);font-size:10px;color:#7ff6ff;animation:bl 1s steps(2) infinite;min-height:14px}
+video.mirror{transform:scaleX(-1)}
+canvas#gc{position:fixed;inset:0;width:100%;height:100%;pointer-events:auto}
+.hidden{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+/* Portada */
+#intro{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px;text-align:center;background:radial-gradient(120% 90% at 50% 20%,#14052b 0%,#14002b 60%,#07000f 100%)}
+#intro .moon{position:absolute;top:7%;right:9%;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff7c2,#ffd400 60%,#ff9d00);box-shadow:0 0 60px 14px rgba(255,200,0,.45);animation:float 5s ease-in-out infinite}
+.bats{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.bats i{position:absolute;font-style:normal;font-size:26px;animation:fly 9s linear infinite}
+.bats i:nth-child(1){top:14%;left:-10%;animation-delay:0s}.bats i:nth-child(2){top:30%;left:-10%;animation-delay:3s;font-size:20px}.bats i:nth-child(3){top:62%;left:-10%;animation-delay:6s;font-size:30px}
+@keyframes fly{to{transform:translateX(125vw) translateY(-30px)}}
+@keyframes float{50%{transform:translateY(10px)}}
+button.btn,.tools button{font-family:var(--arc)}
+h1{margin:0;font-family:"Arcade Normal",monospace;font-weight:400;font-size:clamp(28px,10.5vw,52px);line-height:1.3;letter-spacing:0;display:flex;justify-content:center;filter:drop-shadow(0 0 14px rgba(140,70,255,.8));animation:flick 5s infinite}
+h1 .ltr{display:inline-block;background:linear-gradient(#fff 0%,#6ff3ff 45%,#9b5cff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:2px #12063d;text-shadow:none;paint-order:stroke fill;animation:wave 1.6s ease-in-out infinite;filter:drop-shadow(3px 4px 0 #3a1a9a)}
+h1 .ltr.y{background-image:linear-gradient(#fff 0%,#ffb3ec 45%,#c05cff 100%)}
+@keyframes wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes flick{0%,92%,100%{opacity:1}94%{opacity:.7}96%{opacity:1}98%{opacity:.8}}
+.sub{font-size:13px;line-height:1.7;color:#d9b8ff;max-width:420px}
+.how{font-size:12px;line-height:1.7;color:#fff;background:rgba(255,255,255,.07);border:2px solid rgba(180,107,255,.5);border-radius:14px;padding:14px 16px;max-width:420px;text-align:left}
+.how b{color:var(--yl)}
+.btn{border:0;border-radius:6px;padding:16px 26px;font-size:15px;letter-spacing:.05em;background:var(--yl);color:#2b1a00;box-shadow:0 6px 0 #b38600,0 0 24px rgba(255,212,0,.6);transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #b38600}
+.btn.alt{background:#3a1566;color:#fff;box-shadow:0 5px 0 #1f0a38;font-size:10px;padding:12px 16px}
+.blink{animation:bl 1s steps(2) infinite}@keyframes bl{50%{opacity:.25}}
+/* HUD */
+#hud{position:fixed;left:0;right:0;top:0;z-index:10;padding:calc(10px + env(safe-area-inset-top)) 12px 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:10px;text-shadow:0 2px 0 #000,0 0 8px rgba(0,0,0,.8);pointer-events:none}
+#hud b{color:var(--yl);display:block;font-weight:400;font-size:9px;margin-bottom:5px}
+#hud .c{text-align:center}
+#hud .r{text-align:right}
+#lives{font-size:15px;letter-spacing:2px}
+.tools{position:fixed;right:10px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:12;display:flex;flex-direction:column;gap:10px}
+.tools button{width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(20,0,43,.72);font-size:20px;backdrop-filter:blur(6px)}
+#msg{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:11;font-size:clamp(16px,5.2vw,26px);color:var(--yl);text-align:center;text-shadow:0 3px 0 #7a4a00,0 0 18px rgba(255,212,0,.8);pointer-events:none;white-space:nowrap}
+#msg.pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}@keyframes pop{from{transform:translate(-50%,-50%) scale(.4);opacity:0}}
+#hud,#msg{display:none!important}
+#anchorUI{position:fixed;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));z-index:12;display:flex;flex-direction:column;align-items:center;gap:12px;padding:0 16px;text-align:center}
+#anchorUI p{margin:0;font-size:10px;line-height:1.8;background:rgba(20,0,43,.78);border:2px solid rgba(180,107,255,.6);border-radius:12px;padding:10px 14px;max-width:360px}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:13;font-size:9px;line-height:1.7;background:rgba(20,0,43,.9);border:2px solid var(--yl);border-radius:10px;padding:10px 14px;max-width:86vw;text-align:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<video id="vid" playsinline muted autoplay></video>
+<canvas id="gc"></canvas>
+
+<div id="hud" class="hidden">
+  <div><b style="color:#fff">1UP</b><span id="score">0</span></div>
+  <div class="c"><b style="color:#fff">HIGH SCORE</b><span id="hi">0</span><div style="margin-top:6px;font-size:8px;color:#25d9ff">NIVEL <span id="lvl">1</span> <span id="lives"></span></div></div>
+  <div class="r"><b style="color:#fff">DULCES</b><span id="left">0</span></div>
+</div>
+<div id="msg" class="hidden"></div>
+<div id="anchorUI" class="hidden">
+  <p id="anchorTxt">Apunta a un punto fijo del piso o de la pared y toca para anclar el laberinto ahí.</p>
+  <button class="btn" id="anchorBtn">ANCLAR AQUÍ</button>
+</div>
+<div class="tools hidden" id="tools">
+  <button id="bMute" aria-label="Sonido">🔊</button>
+  <button id="bPhoto" aria-label="Foto">📸</button>
+  <button id="bFlip" aria-label="Cambiar cámara">🔄</button>
+  <button id="bRe" aria-label="Volver a anclar">📍</button>
+</div>
+<div id="toast" class="hidden"></div>
+
+<div id="intro">
+  <div class="moon"></div>
+  <div class="bats"><i>🦇</i><i>🦇</i><i>🦇</i></div>
+  <h1>Chomp<em>kin</em></h1>
+  <p class="sub">La noche de dulces.<br>Introducción en realidad aumentada.</p>
+  <div class="how">
+    <b>1.</b> Apunta la cámara a un punto fijo del piso o la pared: el laberinto se ancla ahí.<br>
+    <b>2.</b> Cuando caiga la noche, ¡corre... o te atrapan! Con disfraz <b>amarillo</b> eres la calabaza.
+  </div>
+  <div id="tap">TOCA PARA ACTIVAR EL SONIDO</div>
+  <button class="btn blink" id="play">▶ PLAY</button>
+  <button id="bMuteI" aria-label="Sonido">🔊</button>
+  <div class="sub" style="font-size:8px;opacity:.7">Se usa la cámara y el audio de tu celular. No se guarda ni se envía ninguna imagen.</div>
+</div>
+<script src="js/audio.js"></script>
+<script src="js/vision.js"></script>
+<script src="js/tracker.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
